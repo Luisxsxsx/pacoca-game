@@ -1,3 +1,5 @@
+package com.Unipampa;
+
 public class Peca {
     CodigoJogo info;
 

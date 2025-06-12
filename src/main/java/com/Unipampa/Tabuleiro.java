@@ -1,3 +1,5 @@
+package com.Unipampa;
+
 public class Tabuleiro {
     private Peca[][] matriz = new Peca[5][5];
     private static Tabuleiro instance;
