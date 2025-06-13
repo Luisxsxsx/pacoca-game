@@ -10,7 +10,7 @@ public class ThePacoca extends Application {
     @Override
     public void start(Stage stage) {
         BorderPane root = new BorderPane();
-        root.setCenter(new TabuleiroView());
+        root.setCenter(new TabuleiroView().grid);
         Scene cena = new Scene(root, 500, 500);
         stage.setTitle("The Pacoca Game");
         stage.setScene(cena);
