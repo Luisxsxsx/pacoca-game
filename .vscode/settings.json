@@ -1,0 +1,17 @@
+{
+    // Configura as bibliotecas que o projeto usa.
+    // O globstar (**) permite especificar que todos os JARs dentro da pasta lib
+    // da sua pasta javafx-sdk no projeto devem ser referenciados.
+    "java.project.referencedLibraries": [
+        "javafx-sdk/lib/*.jar"
+    ],
+
+    // Configura as opções da JVM para a execução e análise do código.
+    // Isso é o equivalente ao --module-path e --add-modules dos seus scripts.
+    "java.vmargs": [
+        "--module-path",
+        "${workspaceFolder}/javafx-sdk/lib", // ${workspaceFolder} é uma variável que aponta para a raiz do seu projeto
+        "--add-modules",
+        "javafx.controls,javafx.fxml,javafx.graphics" // Módulos que sua aplicação usa
+    ]
+}
