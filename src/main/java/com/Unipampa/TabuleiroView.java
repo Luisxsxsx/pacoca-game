@@ -3,9 +3,11 @@ package com.Unipampa;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.input.MouseEvent;;
 
-public class TabuleiroView extends StackPane {
+public class TabuleiroView extends StackPane implements Observer {
 
+    // private Peca pecaSelecionada;
     private Tabuleiro base;
     private GridPane grid;
     public static TabuleiroView instance;
@@ -15,6 +17,12 @@ public class TabuleiroView extends StackPane {
         this.base = Tabuleiro.getInstance();
         grid.setGridLinesVisible(true);
         draw();
+        setOnMouseClicked(getOnDragDetected());
+    }
+
+    @Override
+    public void atualizar(Tabuleiro tabuleiro) {
+        this.base = tabuleiro;
     }
 
     private void draw() {
@@ -36,7 +44,6 @@ public class TabuleiroView extends StackPane {
                 continue;
             }
         }
-
     }
 
     public static TabuleiroView getInstance() {

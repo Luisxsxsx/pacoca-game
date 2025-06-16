@@ -31,4 +31,17 @@ public class Peca {
     public void setInfo(CodigoJogo info) {
         this.info = info;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Peca temp = (Peca) o;
+
+        return this.info == temp.getInfo() && this.position[0] == temp.getPositionX()
+                && this.position[1] == temp.getPositionY();
+    }
 }

@@ -1,12 +1,14 @@
 package com.Unipampa;
 
+import java.util.ArrayList;
+
 public class Tabuleiro {
+    private ArrayList<Observer> objObservers;
     private Peca[] vetor = new Peca[25];
     private static Tabuleiro instance;
 
     private Tabuleiro() {
         createTabuleiro();
-        createLogic();
     }
 
     private void createLogic() {
@@ -17,12 +19,44 @@ public class Tabuleiro {
         this.vetor[12].setInfo(CodigoJogo.PACOCA);
     }
 
+    public void setObserver(Observer observer) {
+        this.objObservers.add(observer);
+    }
+
+    public void notification() {
+        for (Observer observer : objObservers) {
+            observer.atualizar(this);
+        }
+    }
+
+    public void setPeca(Peca peca) {
+        this.vetor[5 * peca.getPositionY() + peca.getPositionX()] = peca;
+    }
+
     private void createTabuleiro() {
         for (int i = 0; i < vetor.length / 5; i++) {
             for (int j = 0; j < vetor.length / 5; j++) {
                 this.vetor[5 * i + j] = new Peca(CodigoJogo.VAZIO, j, i);
             }
         }
+        createLogic();
+    }
+
+    public void moverPeca(Peca peca, int posX, int posY) {
+        int[] iTemp = new int[2];
+        Peca pTemp = this.vetor[5 * posX + posY];
+        iTemp[0] = peca.getPositionX();
+        iTemp[1] = peca.getPositionY();
+
+        peca.setPosition(posX, posY);
+        pTemp.setPosition(iTemp[0], iTemp[1]);
+
+        setPeca(peca);
+        setPeca(pTemp);
+    }
+
+    public Peca getPeca(int posX, int posY) {
+        return this.vetor[5 * posY + posX];
     }
 
     public CodigoJogo getPecaInfo(int i) {
