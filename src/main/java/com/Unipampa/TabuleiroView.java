@@ -4,7 +4,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+
+import com.Unipampa.exceptions.CancelarMovimentoException;
+import com.Unipampa.exceptions.MovimentoInvalidoException;
+
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 public class TabuleiroView extends StackPane implements Observer {
 
@@ -79,23 +85,37 @@ public class TabuleiroView extends StackPane implements Observer {
                 System.out.println("Casa selecionada vazia!");
             }
         } else {
-            boolean movimentoValido = base.moverPeca(this.pecaSelecionada, clickX, clickY);
-            if (movimentoValido) {
-                System.out.println("Movimento Valido!");
-
+            try {
+                base.moverPeca(this.pecaSelecionada, clickX, clickY);
                 nodeCasaSelecionada.setStyle("");
                 this.pecaSelecionada = null;
 
                 draw();
-            } else {
-                System.out.println("Movimento inválido. Tente novamente.");
-                // Se o movimento for inválido, você pode querer manter a peça selecionada ou
-                // desmarcar
-                // Por agora, vamos desmarcar para simplificar
+            } catch (MovimentoInvalidoException e) {
+                System.err.println("Erro de movimento: " + e.getMessage());
+                userAlert(e.getMessage());
                 nodeCasaSelecionada.setStyle("");
                 pecaSelecionada = null;
+
+            } catch (CancelarMovimentoException e) {
+                System.out.println("Cancelando movimento");
+                nodeCasaSelecionada.setStyle("");
+                pecaSelecionada = null;
+
+            } catch (Exception e) {
+                System.err.println("Ocorreu um erro inesperado: " + e.getMessage());
+                e.printStackTrace();
             }
         }
+    }
+
+    private void userAlert(String error) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Movimento Inválido");
+        alert.setHeaderText(null); // Sem cabeçalho
+        alert.setContentText(error);
+        alert.showAndWait(); // Mostra a caixa de diálogo e espera o usuário clicar em OK
+
     }
 
     public static TabuleiroView getInstance() {

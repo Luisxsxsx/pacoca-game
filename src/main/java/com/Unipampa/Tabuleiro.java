@@ -1,6 +1,7 @@
 package com.Unipampa;
 
 import java.util.ArrayList;
+import com.Unipampa.exceptions.*;
 
 public class Tabuleiro {
     private ArrayList<Observer> objObservers;
@@ -42,16 +43,18 @@ public class Tabuleiro {
         }
     }
 
-    public boolean moverPeca(Peca peca, int posX, int posY) {
-        int[] iTemp = new int[2];
+    public void moverPeca(Peca peca, int posX, int posY) {
+        if (posX == peca.getPositionX() && posY == peca.getPositionY()) {
+            throw new CancelarMovimentoException("Movimento Cancelado"); // Tentando mover a peça para o mesmo lugar
+        }
+
         Peca pTemp = this.vetor.get(5 * posY + posX);
+        if (pTemp.getInfo() != CodigoJogo.VAZIO)
+            throw new MovimentoInvalidoException("Não é possível mover para uma casa já ocupada!");
+
+        int[] iTemp = new int[2];
         iTemp[0] = peca.getPositionX();
         iTemp[1] = peca.getPositionY();
-
-        if (posX == peca.getPositionX() && posY == peca.getPositionY()) {
-            return false; // Tentando mover a peça para o mesmo lugar
-        }
-        // if ()
 
         peca.setPosition(posX, posY);
         pTemp.setPosition(iTemp[0], iTemp[1]);
@@ -59,7 +62,6 @@ public class Tabuleiro {
         setPeca(peca);
         setPeca(pTemp);
 
-        return true;
     }
 
     public Peca getPeca(int posX, int posY) {
