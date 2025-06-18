@@ -42,17 +42,24 @@ public class Tabuleiro {
         createLogic();
     }
 
-    public void moverPeca(Peca peca, int posX, int posY) {
+    public boolean moverPeca(Peca peca, int posX, int posY) {
         int[] iTemp = new int[2];
         Peca pTemp = this.vetor[5 * posX + posY];
         iTemp[0] = peca.getPositionX();
         iTemp[1] = peca.getPositionY();
+
+        if (posX == peca.getPositionX() && posY == peca.getPositionY()) {
+            return false; // Tentando mover a peça para o mesmo lugar
+        }
+        // if ()
 
         peca.setPosition(posX, posY);
         pTemp.setPosition(iTemp[0], iTemp[1]);
 
         setPeca(peca);
         setPeca(pTemp);
+
+        return true;
     }
 
     public Peca getPeca(int posX, int posY) {
