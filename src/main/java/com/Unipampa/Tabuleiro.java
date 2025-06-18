@@ -44,7 +44,7 @@ public class Tabuleiro {
 
     public boolean moverPeca(Peca peca, int posX, int posY) {
         int[] iTemp = new int[2];
-        Peca pTemp = this.vetor[5 * posX + posY];
+        Peca pTemp = this.vetor[5 * posY + posX];
         iTemp[0] = peca.getPositionX();
         iTemp[1] = peca.getPositionY();
 
