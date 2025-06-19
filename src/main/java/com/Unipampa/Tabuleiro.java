@@ -38,6 +38,9 @@ public class Tabuleiro implements Observer {
 
             case VEZJOGADOR1:
                 for (Peca peca : vetor) {
+                    if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA)
+                        peca.Movible(true);
+
                     if (peca.getInfo() == CodigoPeca.JOGADOR2)
                         peca.Movible(false);
                 }
@@ -45,6 +48,9 @@ public class Tabuleiro implements Observer {
 
             case VEZJOGADOR2:
                 for (Peca peca : vetor) {
+                    if (peca.getInfo() == CodigoPeca.JOGADOR2 || peca.getInfo() == CodigoPeca.PACOCA)
+                        peca.Movible(true);
+
                     if (peca.getInfo() == CodigoPeca.JOGADOR1)
                         peca.Movible(false);
                 }
