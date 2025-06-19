@@ -3,9 +3,9 @@ package com.Unipampa;
 import java.util.ArrayList;
 import com.Unipampa.exceptions.*;
 
-public class Tabuleiro {
-    private ArrayList<Observer> objObservers;
+public class Tabuleiro implements Observer {
     private ArrayList<Peca> vetor = new ArrayList<Peca>(25);
+    private CodigoJogo turno;
     private static Tabuleiro instance;
 
     private Tabuleiro() {
@@ -13,22 +13,46 @@ public class Tabuleiro {
         createLogic();
     }
 
+    @Override
+    public void atualizar(CodigoJogo turno) {
+        this.turno = turno;
+        changeMovablePeca();
+    }
+
+    private void changeMovablePeca() {
+        switch (this.turno) {
+            case PRIMEIROTURNO:
+                for (Peca peca : vetor) {
+                    if (peca.getInfo() == CodigoPeca.JOGADOR1)
+                        peca.Movible(true);
+                }
+                break;
+
+            case VEZJOGADOR1:
+                for (Peca peca : vetor) {
+                    if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA)
+                        peca.Movible(true);
+                }
+                break;
+
+            case VEZJOGADOR2:
+                for (Peca peca : vetor) {
+                    if (peca.getInfo() == CodigoPeca.JOGADOR2 || peca.getInfo() == CodigoPeca.PACOCA)
+                        peca.Movible(true);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
     private void createLogic() {
         for (int i = 0; i < 5; i++) {
-            this.vetor.get(i).setInfo(CodigoJogo.JOGADOR1);
-            this.vetor.get(i + 20).setInfo(CodigoJogo.JOGADOR2);
+            this.vetor.get(i).setInfo(CodigoPeca.JOGADOR1);
+            this.vetor.get(i + 20).setInfo(CodigoPeca.JOGADOR2);
         }
-        this.vetor.get(12).setInfo(CodigoJogo.PACOCA);
-    }
-
-    public void setObserver(Observer observer) {
-        this.objObservers.add(observer);
-    }
-
-    public void notification() {
-        for (Observer observer : objObservers) {
-            observer.atualizar(this);
-        }
+        this.vetor.get(12).setInfo(CodigoPeca.PACOCA);
     }
 
     public void setPeca(Peca peca) {
@@ -38,7 +62,7 @@ public class Tabuleiro {
     private void createTabuleiro() {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                this.vetor.addLast(new Peca(CodigoJogo.VAZIO, j, i));
+                this.vetor.addLast(new Peca(CodigoPeca.VAZIO, j, i));
             }
         }
     }
@@ -48,8 +72,14 @@ public class Tabuleiro {
             throw new CancelarMovimentoException("Movimento Cancelado"); // Tentando mover a peça para o mesmo lugar
         }
 
+        if (peca.getInfo() == CodigoPeca.VAZIO)
+            throw new MovimentoInvalidoException("Selecione uma peça para jogar!");
+
+        if (peca.isMovable() == false)
+            throw new MovimentoInvalidoException("Você não pode mover esta peça!");
+
         Peca pTemp = this.vetor.get(5 * posY + posX);
-        if (pTemp.getInfo() != CodigoJogo.VAZIO)
+        if (pTemp.getInfo() != CodigoPeca.VAZIO)
             throw new MovimentoInvalidoException("Não é possível mover para uma casa já ocupada!");
 
         int[] iTemp = new int[2];
@@ -68,7 +98,7 @@ public class Tabuleiro {
         return this.vetor.get(5 * posY + posX);
     }
 
-    public CodigoJogo getPecaInfo(int i) {
+    public CodigoPeca getPecaInfo(int i) {
         return this.vetor.get(i).getInfo();
     }
 
@@ -88,16 +118,16 @@ public class Tabuleiro {
         System.out.println(this.vetor.size());
         for (int i = 0; i < this.vetor.size(); i++) {
             // for (int j = 0; j < this.vetor.length / 5; j++) {
-            if (this.vetor.get(i).getInfo() == CodigoJogo.VAZIO)
+            if (this.vetor.get(i).getInfo() == CodigoPeca.VAZIO)
                 System.out.print(
                         "VAZIO " + this.vetor.get(i).getPositionX() + " " + this.vetor.get(i).getPositionY() + " ");
-            else if (this.vetor.get(i).getInfo() == CodigoJogo.JOGADOR1)
+            else if (this.vetor.get(i).getInfo() == CodigoPeca.JOGADOR1)
                 System.out
                         .print("J1 " + this.vetor.get(i).getPositionX() + " " + this.vetor.get(i).getPositionY() + " ");
-            else if (this.vetor.get(i).getInfo() == CodigoJogo.JOGADOR2)
+            else if (this.vetor.get(i).getInfo() == CodigoPeca.JOGADOR2)
                 System.out
                         .print("J2 " + this.vetor.get(i).getPositionX() + " " + this.vetor.get(i).getPositionY() + " ");
-            else if (this.vetor.get(i).getInfo() == CodigoJogo.PACOCA)
+            else if (this.vetor.get(i).getInfo() == CodigoPeca.PACOCA)
                 System.out.print(
                         "PACOCA " + this.vetor.get(i).getPositionX() + " " + this.vetor.get(i).getPositionY() + " ");
             // }

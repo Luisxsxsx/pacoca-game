@@ -1,8 +1,10 @@
 package com.Unipampa;
 
 public enum CodigoJogo {
-    JOGADOR1,
-    JOGADOR2,
-    PACOCA,
-    VAZIO
+    PRIMEIROTURNO,
+    VEZJOGADOR1,
+    VEZJOGADOR2,
+    VITORIAJ1,
+    VITORIAJ2,
+    PROXIMA
 }

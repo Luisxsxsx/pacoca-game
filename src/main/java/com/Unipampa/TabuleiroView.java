@@ -4,21 +4,21 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import com.Unipampa.exceptions.CancelarMovimentoException;
-import com.Unipampa.exceptions.MovimentoInvalidoException;
-
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-public class TabuleiroView extends StackPane implements Observer {
+import com.Unipampa.exceptions.CancelarMovimentoException;
+import com.Unipampa.exceptions.MovimentoInvalidoException;
 
+
+public class TabuleiroView extends StackPane {
+    
     private Peca pecaSelecionada;
     private Node nodeCasaSelecionada;
     private Tabuleiro base;
     private GridPane grid;
-    public static TabuleiroView instance;
+    private static TabuleiroView instance;
 
     private TabuleiroView() {
         this.grid = new GridPane(0, 0);
@@ -27,11 +27,7 @@ public class TabuleiroView extends StackPane implements Observer {
         draw();
     }
 
-    @Override
-    public void atualizar(Tabuleiro tabuleiro) {
-        this.base = tabuleiro;
-    }
-
+    
     private void draw() {
         // Limpa a grid antes de redesenhar para evitar duplicatas, importante para
         // atualizações
@@ -47,13 +43,13 @@ public class TabuleiroView extends StackPane implements Observer {
                 cellRectangle.setFill(Color.BLACK);
             }
 
-            if (peca.getInfo() != CodigoJogo.VAZIO) {
+            if (peca.getInfo() != CodigoPeca.VAZIO) {
                 Rectangle pecaRect = new Rectangle(50, 50); // Um pouco menor que a célula para borda
-                if (peca.getInfo() == CodigoJogo.JOGADOR1) {
+                if (peca.getInfo() == CodigoPeca.JOGADOR1) {
                     pecaRect.setFill(Color.BLUE);
-                } else if (peca.getInfo() == CodigoJogo.JOGADOR2) {
+                } else if (peca.getInfo() == CodigoPeca.JOGADOR2) {
                     pecaRect.setFill(Color.RED);
-                } else if (peca.getInfo() == CodigoJogo.PACOCA) {
+                } else if (peca.getInfo() == CodigoPeca.PACOCA) {
                     pecaRect.setFill(Color.BROWN);
                 }
                 cellPane.getChildren().add(pecaRect); // Adiciona a peça visualmente à célula
@@ -75,14 +71,14 @@ public class TabuleiroView extends StackPane implements Observer {
         Peca pecaNaCasa = base.getPeca(clickX, clickY);
 
         if (this.pecaSelecionada == null) {
-            if (pecaNaCasa.getInfo() != CodigoJogo.VAZIO) {
+            if (pecaNaCasa.getInfo() != CodigoPeca.VAZIO) {
                 this.pecaSelecionada = pecaNaCasa;
                 this.nodeCasaSelecionada = (Node) event.getSource();
 
                 nodeCasaSelecionada.setStyle("-fx-border-color: yellow; -fx-border-width: 2;");
                 System.out.println("Peça selecionada em: [" + clickX + "," + clickY + "]");
             } else {
-                System.out.println("Casa selecionada vazia!");
+                userAlert("Casa selecionada vazia!");
             }
         } else {
             try {

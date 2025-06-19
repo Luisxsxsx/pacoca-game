@@ -11,8 +11,8 @@ public class ThePacoca extends Application {
     public void start(Stage stage) {
         stage.setTitle("The Pacoca Game");
         stage.setResizable(false);
-        stage.setX(500);
-        stage.setY(500);
+        stage.setX(433);
+        
 
         BorderPane root = new BorderPane();
         root.setCenter(TabuleiroView.getInstance());
