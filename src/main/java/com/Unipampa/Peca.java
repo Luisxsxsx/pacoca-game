@@ -10,7 +10,27 @@ public class Peca {
         this.position = new int[2];
         this.position[0] = x;
         this.position[1] = y;
-        this.movable = false;
+        this.movable = true;
+    }
+
+    public String pecaSelecionada() {
+        switch (info) {
+            case VAZIO:
+                return "VAZIO";
+
+            case JOGADOR1:
+                return "JOGADOR 1";
+
+            case JOGADOR2:
+                return "JOGADOR 2";
+
+            case PACOCA:
+                return "PACOCA";
+
+            default:
+                return "VAZIO";
+
+        }
     }
 
     public void Movible(boolean value) {

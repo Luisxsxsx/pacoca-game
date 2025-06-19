@@ -6,16 +6,24 @@ import com.Unipampa.exceptions.*;
 public class Tabuleiro implements Observer {
     private ArrayList<Peca> vetor = new ArrayList<Peca>(25);
     private CodigoJogo turno;
+    private boolean moverPacoca;
+    private int movimentos;
     private static Tabuleiro instance;
 
     private Tabuleiro() {
+        this.turno = CodigoJogo.PRIMEIROTURNO;
+        moverPacoca = false;
+        movimentos = 1;
         createTabuleiro();
         createLogic();
+        changeMovablePeca();
     }
 
     @Override
     public void atualizar(CodigoJogo turno) {
         this.turno = turno;
+        this.moverPacoca = true;
+        resetMovimentos();
         changeMovablePeca();
     }
 
@@ -23,22 +31,22 @@ public class Tabuleiro implements Observer {
         switch (this.turno) {
             case PRIMEIROTURNO:
                 for (Peca peca : vetor) {
-                    if (peca.getInfo() == CodigoPeca.JOGADOR1)
-                        peca.Movible(true);
+                    if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA)
+                        peca.Movible(false);
                 }
                 break;
 
             case VEZJOGADOR1:
                 for (Peca peca : vetor) {
-                    if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA)
-                        peca.Movible(true);
+                    if (peca.getInfo() == CodigoPeca.JOGADOR2)
+                        peca.Movible(false);
                 }
                 break;
 
             case VEZJOGADOR2:
                 for (Peca peca : vetor) {
-                    if (peca.getInfo() == CodigoPeca.JOGADOR2 || peca.getInfo() == CodigoPeca.PACOCA)
-                        peca.Movible(true);
+                    if (peca.getInfo() == CodigoPeca.JOGADOR1)
+                        peca.Movible(false);
                 }
                 break;
 
@@ -53,6 +61,8 @@ public class Tabuleiro implements Observer {
             this.vetor.get(i + 20).setInfo(CodigoPeca.JOGADOR2);
         }
         this.vetor.get(12).setInfo(CodigoPeca.PACOCA);
+        this.vetor.get(12).Movible(true);
+        this.moverPacoca = false;
     }
 
     public void setPeca(Peca peca) {
@@ -72,11 +82,11 @@ public class Tabuleiro implements Observer {
             throw new CancelarMovimentoException("Movimento Cancelado"); // Tentando mover a peça para o mesmo lugar
         }
 
-        if (peca.getInfo() == CodigoPeca.VAZIO)
-            throw new MovimentoInvalidoException("Selecione uma peça para jogar!");
-
         if (peca.isMovable() == false)
             throw new MovimentoInvalidoException("Você não pode mover esta peça!");
+
+        if (moverPacoca && peca.getInfo() != CodigoPeca.PACOCA)
+            throw new MovimentoInvalidoException("Você deve mover a pacoca primeiro");
 
         Peca pTemp = this.vetor.get(5 * posY + posX);
         if (pTemp.getInfo() != CodigoPeca.VAZIO)
@@ -91,7 +101,16 @@ public class Tabuleiro implements Observer {
 
         setPeca(peca);
         setPeca(pTemp);
+        moverPacoca = false;
+        movimentos--;
+    }
 
+    public int getMovimentos() {
+        return this.movimentos;
+    }
+
+    private void resetMovimentos() {
+        this.movimentos = 2;
     }
 
     public Peca getPeca(int posX, int posY) {

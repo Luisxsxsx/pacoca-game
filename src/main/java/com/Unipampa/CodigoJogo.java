@@ -6,5 +6,5 @@ public enum CodigoJogo {
     VEZJOGADOR2,
     VITORIAJ1,
     VITORIAJ2,
-    PROXIMA
+    PROXIMOTURNO
 }

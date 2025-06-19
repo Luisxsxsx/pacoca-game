@@ -11,23 +11,23 @@ import javafx.scene.control.Alert.AlertType;
 import com.Unipampa.exceptions.CancelarMovimentoException;
 import com.Unipampa.exceptions.MovimentoInvalidoException;
 
+public class TabuleiroView extends StackPane implements Observed {
 
-public class TabuleiroView extends StackPane {
-    
+    private Observer geObserver;
     private Peca pecaSelecionada;
     private Node nodeCasaSelecionada;
     private Tabuleiro base;
-    private GridPane grid;
+    private GridPane grid; // Grid do tabuleiro
     private static TabuleiroView instance;
 
     private TabuleiroView() {
         this.grid = new GridPane(0, 0);
         this.base = Tabuleiro.getInstance();
+        this.geObserver = Gerenciador.getInsance();
         this.getChildren().add(this.grid);
         draw();
     }
 
-    
     private void draw() {
         // Limpa a grid antes de redesenhar para evitar duplicatas, importante para
         // atualizações
@@ -69,6 +69,10 @@ public class TabuleiroView extends StackPane {
 
     private void handleCellClick(MouseEvent event, int clickX, int clickY) {
         Peca pecaNaCasa = base.getPeca(clickX, clickY);
+        if (pecaNaCasa.isMovable() == false) {
+            userAlert("Você não pode mover esta peça!");
+            return;
+        }
 
         if (this.pecaSelecionada == null) {
             if (pecaNaCasa.getInfo() != CodigoPeca.VAZIO) {
@@ -76,7 +80,7 @@ public class TabuleiroView extends StackPane {
                 this.nodeCasaSelecionada = (Node) event.getSource();
 
                 nodeCasaSelecionada.setStyle("-fx-border-color: yellow; -fx-border-width: 2;");
-                System.out.println("Peça selecionada em: [" + clickX + "," + clickY + "]");
+                System.out.println("Peça selecionada em: [" + clickX + "," + clickY + "] "+ pecaNaCasa.pecaSelecionada());
             } else {
                 userAlert("Casa selecionada vazia!");
             }
@@ -85,6 +89,9 @@ public class TabuleiroView extends StackPane {
                 base.moverPeca(this.pecaSelecionada, clickX, clickY);
                 nodeCasaSelecionada.setStyle("");
                 this.pecaSelecionada = null;
+
+                if (base.getMovimentos() == 0)
+                    notificar();
 
                 draw();
             } catch (MovimentoInvalidoException e) {
@@ -112,6 +119,11 @@ public class TabuleiroView extends StackPane {
         alert.setContentText(error);
         alert.showAndWait(); // Mostra a caixa de diálogo e espera o usuário clicar em OK
 
+    }
+
+    @Override
+    public void notificar() {
+        this.geObserver.atualizar(CodigoJogo.PROXIMOTURNO);
     }
 
     public static TabuleiroView getInstance() {

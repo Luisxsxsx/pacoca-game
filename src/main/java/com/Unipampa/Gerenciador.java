@@ -4,13 +4,17 @@ public class Gerenciador implements Observed, Observer {
     private Observer tabObserver;
     private CodigoJogo codigo;
     private CodigoJogo flag;
+    private static Gerenciador instance;
 
-    public Gerenciador() {
+    private Gerenciador() {
         this.tabObserver = Tabuleiro.getInstance();
-        this.codigo = CodigoJogo.VEZJOGADOR2;
+        this.codigo = CodigoJogo.PRIMEIROTURNO;
     }
 
     public void nextTurno() {
+        if (flag == CodigoJogo.PROXIMOTURNO)
+            flag = null;
+
         switch (codigo) {
             case PRIMEIROTURNO:
                 setCodigo(CodigoJogo.VEZJOGADOR1);
@@ -28,6 +32,14 @@ public class Gerenciador implements Observed, Observer {
                 setCodigo(CodigoJogo.PRIMEIROTURNO);
                 break;
         }
+    }
+
+    public static Gerenciador getInsance() {
+        if (instance == null) {
+            instance = new Gerenciador();
+        }
+
+        return instance;
     }
 
     public void setCodigo(CodigoJogo codigo) {
