@@ -90,37 +90,88 @@ public class Tabuleiro implements Observer {
     }
 
     private void calcPossibleMoves(Peca peca) {
-        peca.resetPossiblePosition();
+        peca.resetPossiblePosition(); 
 
-        int x, y, temp;
-        x = peca.getPositionX();
-        y = peca.getPositionY();
-        while (vetor.get(temp = 5 * (y--) + x) != null && vetor.get(temp).getInfo() == CodigoPeca.VAZIO)
-            ;
-        if (vetor.get(temp = 5 * (y++) + x) != null)
-            peca.addPossiblePosition(vetor.get(temp + 5).getPositionX(), vetor.get(temp + 5).getPositionX());
+        int startX = peca.getPositionX();
+        int startY = peca.getPositionY();
 
-        x = peca.getPositionX();
-        y = peca.getPositionY();
-        while (vetor.get(temp = 5 * (y++) + x) != null && vetor.get(temp).getInfo() == CodigoPeca.VAZIO)
-            ;
-        if (vetor.get(temp = 5 * (y--) + x) != null)
-            peca.addPossiblePosition(vetor.get(temp + 5).getPositionX(), vetor.get(temp + 5).getPositionX());
+        // 1. Mover para CIMA (diminuindo Y)
+        int currentY = startY - 1;
+        int farthestUpX = startX;
+        int farthestUpY = startY;
 
-        x = peca.getPositionX();
-        y = peca.getPositionY();
-        while (vetor.get(temp = 5 * y + (x++)) != null && vetor.get(temp).getInfo() == CodigoPeca.VAZIO)
-            ;
-        if (vetor.get(temp = 5 * y + (x--)) != null)
-            peca.addPossiblePosition(vetor.get(temp + 5).getPositionX(), vetor.get(temp + 5).getPositionX());
+        while (currentY >= 0) { // Enquanto estiver dentro do tabuleiro
+            Peca targetPeca = getPeca(startX, currentY);
+            if (targetPeca != null && targetPeca.getInfo() == CodigoPeca.VAZIO) {
+                farthestUpX = startX;
+                farthestUpY = currentY;
+                currentY--; // Continua subindo
+            } else {
+                break; // Encontrou uma peça ou fora do limite
+            }
+        }
+        // Adiciona a posição mais distante para cima (se for diferente da posição
+        // inicial)
+        if (farthestUpY != startY) {
+            peca.addPossiblePosition(farthestUpX, farthestUpY);
+        }
 
-        x = peca.getPositionX();
-        y = peca.getPositionY();
-        while (vetor.get(temp = 5 * y + (x--)) != null && vetor.get(temp).getInfo() == CodigoPeca.VAZIO)
-            ;
-        if (vetor.get(temp = 5 * y + (x++)) != null)
-            peca.addPossiblePosition(vetor.get(temp + 5).getPositionX(), vetor.get(temp + 5).getPositionX());
+        // 2. Mover para BAIXO (aumentando Y)
+        currentY = startY + 1;
+        int farthestDownX = startX;
+        int farthestDownY = startY;
 
+        while (currentY < 5) { // Enquanto estiver dentro do tabuleiro
+            Peca targetPeca = getPeca(startX, currentY);
+            if (targetPeca != null && targetPeca.getInfo() == CodigoPeca.VAZIO) {
+                farthestDownX = startX;
+                farthestDownY = currentY;
+                currentY++; // Continua descendo
+            } else {
+                break; // Encontrou uma peça ou fora do limite
+            }
+        }
+        if (farthestDownY != startY) {
+            peca.addPossiblePosition(farthestDownX, farthestDownY);
+        }
+
+        // 3. Mover para ESQUERDA (diminuindo X)
+        int currentX = startX - 1;
+        int farthestLeftX = startX;
+        int farthestLeftY = startY;
+
+        while (currentX >= 0) { // Enquanto estiver dentro do tabuleiro
+            Peca targetPeca = getPeca(currentX, startY);
+            if (targetPeca != null && targetPeca.getInfo() == CodigoPeca.VAZIO) {
+                farthestLeftX = currentX;
+                farthestLeftY = startY;
+                currentX--; // Continua indo para a esquerda
+            } else {
+                break; // Encontrou uma peça ou fora do limite
+            }
+        }
+        if (farthestLeftX != startX) {
+            peca.addPossiblePosition(farthestLeftX, farthestLeftY);
+        }
+
+        // 4. Mover para DIREITA (aumentando X)
+        currentX = startX + 1;
+        int farthestRightX = startX;
+        int farthestRightY = startY;
+
+        while (currentX < 5) { // Enquanto estiver dentro do tabuleiro
+            Peca targetPeca = getPeca(currentX, startY);
+            if (targetPeca != null && targetPeca.getInfo() == CodigoPeca.VAZIO) {
+                farthestRightX = currentX;
+                farthestRightY = startY;
+                currentX++; // Continua indo para a direita
+            } else {
+                break; // Encontrou uma peça ou fora do limite
+            }
+        }
+        if (farthestRightX != startX) {
+            peca.addPossiblePosition(farthestRightX, farthestRightY);
+        }
     }
 
     public void moverPeca(Peca peca, int posX, int posY) {

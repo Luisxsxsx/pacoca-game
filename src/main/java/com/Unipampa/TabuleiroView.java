@@ -70,6 +70,23 @@ public class TabuleiroView extends StackPane implements Observed {
         }
     }
 
+    private ArrayList<Peca> getPecasPossiveis(Peca pecaNaCasa) {
+        ArrayList<Peca> temp = new ArrayList<>();
+        for (int[] position : pecaNaCasa.possibleMovePositions()) {
+            temp.add(base.getPeca(position[0], position[1]));
+        }
+
+        return temp;
+    }
+
+    private ArrayList<Node> getCasasPossiveis() {
+        ArrayList<Node> temp = new ArrayList<>();
+        for (Peca peca : this.pecasPossiveis) {
+            temp.add(this.grid.getChildren().get(5 * peca.getPositionY() + peca.getPositionX()));
+        }
+        return temp;
+    }
+
     private void handleCellClick(MouseEvent event, int clickX, int clickY) {
         Peca pecaNaCasa = base.getPeca(clickX, clickY);
         if (pecaNaCasa.isMovable() == false) {
@@ -81,8 +98,13 @@ public class TabuleiroView extends StackPane implements Observed {
             if (pecaNaCasa.getInfo() != CodigoPeca.VAZIO) {
                 this.pecaSelecionada = pecaNaCasa;
                 this.nodeCasaSelecionada = (Node) event.getSource();
+                this.pecasPossiveis = getPecasPossiveis(pecaNaCasa);
+                this.nodeCasasPossiveis = getCasasPossiveis();
 
                 nodeCasaSelecionada.setStyle("-fx-border-color: yellow; -fx-border-width: 2;");
+                for (Node node : nodeCasasPossiveis) {
+                    node.setStyle("-fx-border-color: yellow; -fx-border-width: 2;");
+                }
                 System.out.println(
                         "Peça selecionada em: [" + clickX + "," + clickY + "] " + pecaNaCasa.pecaSelecionada());
             } else {
@@ -92,8 +114,12 @@ public class TabuleiroView extends StackPane implements Observed {
             try {
                 base.moverPeca(this.pecaSelecionada, clickX, clickY);
                 nodeCasaSelecionada.setStyle("");
+                for (Node node : nodeCasasPossiveis) {
+                    node.setStyle("");
+                }
                 this.pecaSelecionada = null;
-
+                this.nodeCasasPossiveis.clear();
+                this.pecasPossiveis.clear();
                 if (base.getMovimentos() == 0)
                     notificar();
 
@@ -102,12 +128,22 @@ public class TabuleiroView extends StackPane implements Observed {
                 System.err.println("Erro de movimento: " + e.getMessage());
                 userAlert(e.getMessage());
                 nodeCasaSelecionada.setStyle("");
+                for (Node node : nodeCasasPossiveis) {
+                    node.setStyle("");
+                }
                 pecaSelecionada = null;
+                this.nodeCasasPossiveis.clear();
+                this.pecasPossiveis.clear();
 
             } catch (CancelarMovimentoException e) {
                 System.out.println("Cancelando movimento");
                 nodeCasaSelecionada.setStyle("");
+                for (Node node : nodeCasasPossiveis) {
+                    node.setStyle("");
+                }
                 pecaSelecionada = null;
+                this.nodeCasasPossiveis.clear();
+                this.pecasPossiveis.clear();
 
             } catch (Exception e) {
                 System.err.println("Ocorreu um erro inesperado: " + e.getMessage());
