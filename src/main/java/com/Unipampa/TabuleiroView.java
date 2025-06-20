@@ -7,6 +7,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import java.util.ArrayList;
 
 import com.Unipampa.exceptions.CancelarMovimentoException;
 import com.Unipampa.exceptions.MovimentoInvalidoException;
@@ -16,6 +17,8 @@ public class TabuleiroView extends StackPane implements Observed {
     private Observer geObserver;
     private Peca pecaSelecionada;
     private Node nodeCasaSelecionada;
+    private ArrayList<Peca> pecasPossiveis;
+    private ArrayList<Node> nodeCasasPossiveis;
     private Tabuleiro base;
     private GridPane grid; // Grid do tabuleiro
     private static TabuleiroView instance;
@@ -80,7 +83,8 @@ public class TabuleiroView extends StackPane implements Observed {
                 this.nodeCasaSelecionada = (Node) event.getSource();
 
                 nodeCasaSelecionada.setStyle("-fx-border-color: yellow; -fx-border-width: 2;");
-                System.out.println("Peça selecionada em: [" + clickX + "," + clickY + "] "+ pecaNaCasa.pecaSelecionada());
+                System.out.println(
+                        "Peça selecionada em: [" + clickX + "," + clickY + "] " + pecaNaCasa.pecaSelecionada());
             } else {
                 userAlert("Casa selecionada vazia!");
             }

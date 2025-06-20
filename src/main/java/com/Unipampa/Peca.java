@@ -1,16 +1,32 @@
 package com.Unipampa;
 
+import java.util.ArrayList;
+
 public class Peca {
     private CodigoPeca info;
+    private ArrayList<int[]> possibleMoves;
     private int[] position;
     private boolean movable;
 
     public Peca(CodigoPeca info, int x, int y) {
+        this.possibleMoves = new ArrayList<>();
         this.info = info;
         this.position = new int[2];
         this.position[0] = x;
         this.position[1] = y;
         this.movable = true;
+    }
+
+    public void resetPossiblePosition() {
+        this.possibleMoves.clear();
+    }
+
+    public void addPossiblePosition(int x, int y) {
+        this.possibleMoves.add(new int[] { x, y });
+    }
+
+    public ArrayList<int[]> possibleMovePositions() {
+        return this.possibleMoves;
     }
 
     public String pecaSelecionada() {

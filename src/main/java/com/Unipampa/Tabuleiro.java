@@ -33,13 +33,17 @@ public class Tabuleiro implements Observer {
                 for (Peca peca : vetor) {
                     if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA)
                         peca.Movible(false);
+                    if (peca.getInfo() == CodigoPeca.JOGADOR2)
+                        calcPossibleMoves(peca);
                 }
                 break;
 
             case VEZJOGADOR1:
                 for (Peca peca : vetor) {
-                    if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA)
+                    if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA) {
                         peca.Movible(true);
+                        calcPossibleMoves(peca);
+                    }
 
                     if (peca.getInfo() == CodigoPeca.JOGADOR2)
                         peca.Movible(false);
@@ -48,9 +52,10 @@ public class Tabuleiro implements Observer {
 
             case VEZJOGADOR2:
                 for (Peca peca : vetor) {
-                    if (peca.getInfo() == CodigoPeca.JOGADOR2 || peca.getInfo() == CodigoPeca.PACOCA)
+                    if (peca.getInfo() == CodigoPeca.JOGADOR2 || peca.getInfo() == CodigoPeca.PACOCA) {
                         peca.Movible(true);
-
+                        calcPossibleMoves(peca);
+                    }
                     if (peca.getInfo() == CodigoPeca.JOGADOR1)
                         peca.Movible(false);
                 }
@@ -59,6 +64,7 @@ public class Tabuleiro implements Observer {
             default:
                 break;
         }
+
     }
 
     private void createLogic() {
@@ -81,6 +87,40 @@ public class Tabuleiro implements Observer {
                 this.vetor.addLast(new Peca(CodigoPeca.VAZIO, j, i));
             }
         }
+    }
+
+    private void calcPossibleMoves(Peca peca) {
+        peca.resetPossiblePosition();
+
+        int x, y, temp;
+        x = peca.getPositionX();
+        y = peca.getPositionY();
+        while (vetor.get(temp = 5 * (y--) + x) != null && vetor.get(temp).getInfo() == CodigoPeca.VAZIO)
+            ;
+        if (vetor.get(temp = 5 * (y++) + x) != null)
+            peca.addPossiblePosition(vetor.get(temp + 5).getPositionX(), vetor.get(temp + 5).getPositionX());
+
+        x = peca.getPositionX();
+        y = peca.getPositionY();
+        while (vetor.get(temp = 5 * (y++) + x) != null && vetor.get(temp).getInfo() == CodigoPeca.VAZIO)
+            ;
+        if (vetor.get(temp = 5 * (y--) + x) != null)
+            peca.addPossiblePosition(vetor.get(temp + 5).getPositionX(), vetor.get(temp + 5).getPositionX());
+
+        x = peca.getPositionX();
+        y = peca.getPositionY();
+        while (vetor.get(temp = 5 * y + (x++)) != null && vetor.get(temp).getInfo() == CodigoPeca.VAZIO)
+            ;
+        if (vetor.get(temp = 5 * y + (x--)) != null)
+            peca.addPossiblePosition(vetor.get(temp + 5).getPositionX(), vetor.get(temp + 5).getPositionX());
+
+        x = peca.getPositionX();
+        y = peca.getPositionY();
+        while (vetor.get(temp = 5 * y + (x--)) != null && vetor.get(temp).getInfo() == CodigoPeca.VAZIO)
+            ;
+        if (vetor.get(temp = 5 * y + (x++)) != null)
+            peca.addPossiblePosition(vetor.get(temp + 5).getPositionX(), vetor.get(temp + 5).getPositionX());
+
     }
 
     public void moverPeca(Peca peca, int posX, int posY) {
