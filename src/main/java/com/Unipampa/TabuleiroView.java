@@ -74,6 +74,7 @@ public class TabuleiroView extends StackPane implements Observed {
         ArrayList<Peca> temp = new ArrayList<>();
         for (int[] position : pecaNaCasa.possibleMovePositions()) {
             temp.add(base.getPeca(position[0], position[1]));
+            System.out.println("Posições possiveis: X - " + position[0] + "; Y - " + position[1]);
         }
 
         return temp;

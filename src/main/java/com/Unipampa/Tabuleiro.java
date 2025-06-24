@@ -89,9 +89,7 @@ public class Tabuleiro implements Observer {
         }
     }
 
-    private void calcPossibleMoves(Peca peca) {
-        peca.resetPossiblePosition(); 
-
+    private void calcFarthestUp(Peca peca) {
         int startX = peca.getPositionX();
         int startY = peca.getPositionY();
 
@@ -115,9 +113,15 @@ public class Tabuleiro implements Observer {
         if (farthestUpY != startY) {
             peca.addPossiblePosition(farthestUpX, farthestUpY);
         }
+    }
+
+    private void calcFarthestDown(Peca peca) {
+
+        int startX = peca.getPositionX();
+        int startY = peca.getPositionY();
 
         // 2. Mover para BAIXO (aumentando Y)
-        currentY = startY + 1;
+        int currentY = startY + 1;
         int farthestDownX = startX;
         int farthestDownY = startY;
 
@@ -134,6 +138,13 @@ public class Tabuleiro implements Observer {
         if (farthestDownY != startY) {
             peca.addPossiblePosition(farthestDownX, farthestDownY);
         }
+
+    }
+
+    private void calcFarthestLeft(Peca peca) {
+
+        int startX = peca.getPositionX();
+        int startY = peca.getPositionY();
 
         // 3. Mover para ESQUERDA (diminuindo X)
         int currentX = startX - 1;
@@ -154,8 +165,14 @@ public class Tabuleiro implements Observer {
             peca.addPossiblePosition(farthestLeftX, farthestLeftY);
         }
 
+    }
+
+    private void calcFarthestRight(Peca peca) {
+
+        int startX = peca.getPositionX();
+        int startY = peca.getPositionY();
         // 4. Mover para DIREITA (aumentando X)
-        currentX = startX + 1;
+        int currentX = startX + 1;
         int farthestRightX = startX;
         int farthestRightY = startY;
 
@@ -172,6 +189,126 @@ public class Tabuleiro implements Observer {
         if (farthestRightX != startX) {
             peca.addPossiblePosition(farthestRightX, farthestRightY);
         }
+    }
+
+    private void calcFarthestUpRight(Peca peca) {
+
+        int startX = peca.getPositionX();
+        int startY = peca.getPositionY();
+
+        // 4. Mover para DIREITA (aumentando X)
+        int currentY = startY - 1;
+        int currentX = startX + 1;
+        int farthestRightX = startX;
+        int farthestRightY = startY;
+
+        while (currentX < 5 && currentY >= 0) { // Enquanto estiver dentro do tabuleiro
+            Peca targetPeca = getPeca(currentX, currentY);
+            if (targetPeca != null && targetPeca.getInfo() == CodigoPeca.VAZIO) {
+                farthestRightX = currentX;
+                farthestRightY = currentY;
+                currentX++; // Continua indo para a direita
+                currentY--; // Continua indo para cima;
+            } else {
+                break; // Encontrou uma peça ou fora do limite
+            }
+        }
+        if (farthestRightX != startX) {
+            peca.addPossiblePosition(farthestRightX, farthestRightY);
+        }
+    }
+
+    private void calcFarthestUpLeft(Peca peca) {
+
+        int startX = peca.getPositionX();
+        int startY = peca.getPositionY();
+
+        // 4. Mover para Esquerda (aumentando X)
+        int currentY = startY - 1;
+        int currentX = startX - 1;
+        int farthestRightX = startX;
+        int farthestRightY = startY;
+
+        while (currentX >= 0 && currentY >= 0) { // Enquanto estiver dentro do tabuleiro
+            Peca targetPeca = getPeca(currentX, currentY);
+            if (targetPeca != null && targetPeca.getInfo() == CodigoPeca.VAZIO) {
+                farthestRightX = currentX;
+                farthestRightY = currentY;
+                currentX--; // Continua indo para a equerda
+                currentY--; // Continua indo para cima;
+            } else {
+                break; // Encontrou uma peça ou fora do limite
+            }
+        }
+        if (farthestRightX != startX) {
+            peca.addPossiblePosition(farthestRightX, farthestRightY);
+        }
+    }
+
+    private void calcFarthestDownLeft(Peca peca) {
+
+        int startX = peca.getPositionX();
+        int startY = peca.getPositionY();
+
+        // 4. Mover para Esquerda (aumentando X)
+        int currentY = startY + 1;
+        int currentX = startX - 1;
+        int farthestRightX = startX;
+        int farthestRightY = startY;
+
+        while (currentX >= 0 && currentY < 5) { // Enquanto estiver dentro do tabuleiro
+            Peca targetPeca = getPeca(currentX, currentY);
+            if (targetPeca != null && targetPeca.getInfo() == CodigoPeca.VAZIO) {
+                farthestRightX = currentX;
+                farthestRightY = currentY;
+                currentX--; // Continua indo para a equerda
+                currentY++; // Continua indo para baixo;
+            } else {
+                break; // Encontrou uma peça ou fora do limite
+            }
+        }
+        if (farthestRightX != startX) {
+            peca.addPossiblePosition(farthestRightX, farthestRightY);
+        }
+    }
+
+    private void calcFarthestDownRight(Peca peca) {
+
+        int startX = peca.getPositionX();
+        int startY = peca.getPositionY();
+
+        // 4. Mover para Direita (aumentando X)
+        int currentY = startY + 1;
+        int currentX = startX + 1;
+        int farthestRightX = startX;
+        int farthestRightY = startY;
+
+        while (currentX < 5 && currentY < 5) { // Enquanto estiver dentro do tabuleiro
+            Peca targetPeca = getPeca(currentX, currentY);
+            if (targetPeca != null && targetPeca.getInfo() == CodigoPeca.VAZIO) {
+                farthestRightX = currentX;
+                farthestRightY = currentY;
+                currentX++; // Continua indo para a equerda
+                currentY++; // Continua indo para baixo;
+            } else {
+                break; // Encontrou uma peça ou fora do limite
+            }
+        }
+        if (farthestRightX != startX) {
+            peca.addPossiblePosition(farthestRightX, farthestRightY);
+        }
+    }
+
+    private void calcPossibleMoves(Peca peca) {
+        peca.resetPossiblePosition();
+        calcFarthestUp(peca);
+        calcFarthestDown(peca);
+        calcFarthestLeft(peca);
+        calcFarthestRight(peca);
+        calcFarthestDownLeft(peca);
+        calcFarthestDownRight(peca);
+        calcFarthestUpLeft(peca);
+        calcFarthestUpRight(peca);
     }
 
     public void moverPeca(Peca peca, int posX, int posY) {
@@ -192,6 +329,16 @@ public class Tabuleiro implements Observer {
         int[] iTemp = new int[2];
         iTemp[0] = peca.getPositionX();
         iTemp[1] = peca.getPositionY();
+
+        boolean invalid = true;
+        for (int[] possitions : peca.possibleMovePositions()) {
+            if (posX == possitions[0] && posY == possitions[1]) {
+                invalid = false;
+                break;
+            }
+        }
+        if (invalid)
+            throw new MovimentoInvalidoException("Você não pode mover a peça selecionada para esta casa!");
 
         peca.setPosition(posX, posY);
         pTemp.setPosition(iTemp[0], iTemp[1]);
