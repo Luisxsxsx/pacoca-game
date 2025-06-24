@@ -49,7 +49,7 @@ public class Peca {
         }
     }
 
-    public void Movible(boolean value) {
+    public void Movable(boolean value) {
         this.movable = value;
     }
 

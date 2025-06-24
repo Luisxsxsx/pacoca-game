@@ -32,7 +32,7 @@ public class Tabuleiro implements Observer {
             case PRIMEIROTURNO:
                 for (Peca peca : vetor) {
                     if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA)
-                        peca.Movible(false);
+                        peca.Movable(false);
                     if (peca.getInfo() == CodigoPeca.JOGADOR2)
                         calcPossibleMoves(peca);
                 }
@@ -41,23 +41,23 @@ public class Tabuleiro implements Observer {
             case VEZJOGADOR1:
                 for (Peca peca : vetor) {
                     if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA) {
-                        peca.Movible(true);
+                        peca.Movable(true);
                         calcPossibleMoves(peca);
                     }
 
                     if (peca.getInfo() == CodigoPeca.JOGADOR2)
-                        peca.Movible(false);
+                        peca.Movable(false);
                 }
                 break;
 
             case VEZJOGADOR2:
                 for (Peca peca : vetor) {
                     if (peca.getInfo() == CodigoPeca.JOGADOR2 || peca.getInfo() == CodigoPeca.PACOCA) {
-                        peca.Movible(true);
+                        peca.Movable(true);
                         calcPossibleMoves(peca);
                     }
                     if (peca.getInfo() == CodigoPeca.JOGADOR1)
-                        peca.Movible(false);
+                        peca.Movable(false);
                 }
                 break;
 
@@ -73,8 +73,7 @@ public class Tabuleiro implements Observer {
             this.vetor.get(i + 20).setInfo(CodigoPeca.JOGADOR2);
         }
         this.vetor.get(12).setInfo(CodigoPeca.PACOCA);
-        this.vetor.get(12).Movible(true);
-        this.moverPacoca = false;
+        this.vetor.get(12).Movable(true);
     }
 
     public void setPeca(Peca peca) {
@@ -322,6 +321,9 @@ public class Tabuleiro implements Observer {
         if (moverPacoca && peca.getInfo() != CodigoPeca.PACOCA)
             throw new MovimentoInvalidoException("Você deve mover a pacoca primeiro");
 
+        if (peca.getInfo() == CodigoPeca.PACOCA && !moverPacoca)
+            throw new MovimentoInvalidoException("Você não pode mover a paçoca!");
+
         Peca pTemp = this.vetor.get(5 * posY + posX);
         if (pTemp.getInfo() != CodigoPeca.VAZIO)
             throw new MovimentoInvalidoException("Não é possível mover para uma casa já ocupada!");
@@ -342,9 +344,9 @@ public class Tabuleiro implements Observer {
 
         peca.setPosition(posX, posY);
         pTemp.setPosition(iTemp[0], iTemp[1]);
-
         setPeca(peca);
         setPeca(pTemp);
+
         moverPacoca = false;
         movimentos--;
     }
