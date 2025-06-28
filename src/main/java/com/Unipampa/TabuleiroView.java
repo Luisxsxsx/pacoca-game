@@ -14,19 +14,23 @@ import com.Unipampa.exceptions.MovimentoInvalidoException;
 
 public class TabuleiroView extends StackPane implements Observed {
 
-    private Observer geObserver;
+    private ArrayList<Observer> geObserver;
     private Peca pecaSelecionada;
     private Node nodeCasaSelecionada;
     private ArrayList<Peca> pecasPossiveis;
     private ArrayList<Node> nodeCasasPossiveis;
     private Tabuleiro base;
     private GridPane grid; // Grid do tabuleiro
+    private CodigoJogo gameSituation;
     private static TabuleiroView instance;
 
     private TabuleiroView() {
+        this.gameSituation = CodigoJogo.PRIMEIROTURNO;
         this.grid = new GridPane(0, 0);
         this.base = Tabuleiro.getInstance();
-        this.geObserver = Gerenciador.getInsance();
+        this.geObserver = new ArrayList<>();
+        this.geObserver.add(Gerenciador.getInsance());
+        this.geObserver.add(ThePacoca.getInstance());
         this.getChildren().add(this.grid);
         draw();
     }
@@ -35,38 +39,41 @@ public class TabuleiroView extends StackPane implements Observed {
         // Limpa a grid antes de redesenhar para evitar duplicatas, importante para
         // atualizações
         this.grid.getChildren().clear();
+        if (this.gameSituation != CodigoJogo.VITORIAJ1 ||
+                this.gameSituation != CodigoJogo.VITORIAJ2) {
 
-        for (Peca peca : base.getVetor()) {
-            Rectangle cellRectangle = new Rectangle(100, 100);
-            StackPane cellPane = new StackPane(cellRectangle);
+            for (Peca peca : base.getVetor()) {
+                Rectangle cellRectangle = new Rectangle(100, 100);
+                StackPane cellPane = new StackPane(cellRectangle);
 
-            if ((peca.getPositionX() + peca.getPositionY()) % 2 == 0) {
-                cellRectangle.setFill(Color.WHITE);
-            } else {
-                cellRectangle.setFill(Color.BLACK);
-            }
-
-            if (peca.getInfo() != CodigoPeca.VAZIO) {
-                Rectangle pecaRect = new Rectangle(50, 50); // Um pouco menor que a célula para borda
-                if (peca.getInfo() == CodigoPeca.JOGADOR1) {
-                    pecaRect.setFill(Color.BLUE);
-                } else if (peca.getInfo() == CodigoPeca.JOGADOR2) {
-                    pecaRect.setFill(Color.RED);
-                } else if (peca.getInfo() == CodigoPeca.PACOCA) {
-                    pecaRect.setFill(Color.BROWN);
+                if ((peca.getPositionX() + peca.getPositionY()) % 2 == 0) {
+                    cellRectangle.setFill(Color.WHITE);
+                } else {
+                    cellRectangle.setFill(Color.BLACK);
                 }
-                cellPane.getChildren().add(pecaRect); // Adiciona a peça visualmente à célula
+
+                if (peca.getInfo() != CodigoPeca.VAZIO) {
+                    Rectangle pecaRect = new Rectangle(50, 50); // Um pouco menor que a célula para borda
+                    if (peca.getInfo() == CodigoPeca.JOGADOR1) {
+                        pecaRect.setFill(Color.BLUE);
+                    } else if (peca.getInfo() == CodigoPeca.JOGADOR2) {
+                        pecaRect.setFill(Color.RED);
+                    } else if (peca.getInfo() == CodigoPeca.PACOCA) {
+                        pecaRect.setFill(Color.BROWN);
+                    }
+                    cellPane.getChildren().add(pecaRect); // Adiciona a peça visualmente à célula
+                }
+
+                // ADICIONANDO LISINTER PARA CADA CELULA //
+                final int currentX = peca.getPositionX();
+                final int currentY = peca.getPositionY();
+
+                cellPane.setOnMouseClicked(event -> {
+                    handleCellClick(event, currentX, currentY);
+                });
+
+                this.grid.add(cellPane, peca.getPositionX(), peca.getPositionY());
             }
-
-            // ADICIONANDO LISINTER PARA CADA CELULA //
-            final int currentX = peca.getPositionX();
-            final int currentY = peca.getPositionY();
-
-            cellPane.setOnMouseClicked(event -> {
-                handleCellClick(event, currentX, currentY);
-            });
-
-            this.grid.add(cellPane, peca.getPositionX(), peca.getPositionY());
         }
     }
 
@@ -99,6 +106,7 @@ public class TabuleiroView extends StackPane implements Observed {
             if (pecaNaCasa.getInfo() != CodigoPeca.VAZIO) {
                 this.pecaSelecionada = pecaNaCasa;
                 this.nodeCasaSelecionada = (Node) event.getSource();
+                this.base.calcPossibleMoves(pecaNaCasa);
                 this.pecasPossiveis = getPecasPossiveis(pecaNaCasa);
                 this.nodeCasasPossiveis = getCasasPossiveis();
 
@@ -114,17 +122,27 @@ public class TabuleiroView extends StackPane implements Observed {
         } else {
             try {
                 base.moverPeca(this.pecaSelecionada, clickX, clickY);
-                nodeCasaSelecionada.setStyle("");
-                for (Node node : nodeCasasPossiveis) {
-                    node.setStyle("");
-                }
-                this.pecaSelecionada = null;
-                this.nodeCasasPossiveis.clear();
-                this.pecasPossiveis.clear();
-                if (base.getMovimentos() == 0)
-                    notificar();
 
-                draw();
+                if (base.verificarVitoria() == CodigoJogo.VITORIAJ1 ||
+                        base.verificarVitoria() == CodigoJogo.VITORIAJ2) {
+                    this.gameSituation = base.verificarVitoria();
+                    notificar();
+                } else {
+
+                    nodeCasaSelecionada.setStyle("");
+                    for (Node node : nodeCasasPossiveis) {
+                        node.setStyle("");
+                    }
+                    this.pecaSelecionada = null;
+                    this.nodeCasasPossiveis.clear();
+                    this.pecasPossiveis.clear();
+                    if (base.getMovimentos() == 0) {
+                        this.gameSituation = CodigoJogo.PROXIMOTURNO;
+                        notificar();
+                    }
+
+                    draw();
+                }
             } catch (MovimentoInvalidoException e) {
                 System.err.println("Erro de movimento: " + e.getMessage());
                 userAlert(e.getMessage());
@@ -164,7 +182,9 @@ public class TabuleiroView extends StackPane implements Observed {
 
     @Override
     public void notificar() {
-        this.geObserver.atualizar(CodigoJogo.PROXIMOTURNO);
+        for (Observer observer : this.geObserver) {
+            observer.atualizar(this.gameSituation);
+        }
     }
 
     public static TabuleiroView getInstance() {

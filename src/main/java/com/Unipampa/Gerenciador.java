@@ -63,7 +63,15 @@ public class Gerenciador implements Observed, Observer {
     @Override
     public void atualizar(CodigoJogo flag) {
         this.flag = flag;
-        nextTurno();
+        if (this.flag == CodigoJogo.VITORIAJ1 ||
+                this.flag == CodigoJogo.VITORIAJ2)
+            declararVitoria(this.flag);
+        else
+            nextTurno();
+    }
+
+    public void declararVitoria(CodigoJogo player) {
+
     }
 
     @Override

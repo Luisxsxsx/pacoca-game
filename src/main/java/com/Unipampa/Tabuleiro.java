@@ -22,9 +22,12 @@ public class Tabuleiro implements Observer {
     @Override
     public void atualizar(CodigoJogo turno) {
         this.turno = turno;
-        this.moverPacoca = true;
-        resetMovimentos();
-        changeMovablePeca();
+        if (this.turno != CodigoJogo.VITORIAJ1 ||
+                this.turno != CodigoJogo.VEZJOGADOR2) {
+            this.moverPacoca = true;
+            resetMovimentos();
+            changeMovablePeca();
+        }
     }
 
     private void changeMovablePeca() {
@@ -33,8 +36,8 @@ public class Tabuleiro implements Observer {
                 for (Peca peca : vetor) {
                     if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA)
                         peca.Movable(false);
-                    if (peca.getInfo() == CodigoPeca.JOGADOR2)
-                        calcPossibleMoves(peca);
+                    // if (peca.getInfo() == CodigoPeca.JOGADOR2)
+                    // calcPossibleMoves(peca);
                 }
                 break;
 
@@ -42,7 +45,7 @@ public class Tabuleiro implements Observer {
                 for (Peca peca : vetor) {
                     if (peca.getInfo() == CodigoPeca.JOGADOR1 || peca.getInfo() == CodigoPeca.PACOCA) {
                         peca.Movable(true);
-                        calcPossibleMoves(peca);
+                        // calcPossibleMoves(peca);
                     }
 
                     if (peca.getInfo() == CodigoPeca.JOGADOR2)
@@ -54,7 +57,7 @@ public class Tabuleiro implements Observer {
                 for (Peca peca : vetor) {
                     if (peca.getInfo() == CodigoPeca.JOGADOR2 || peca.getInfo() == CodigoPeca.PACOCA) {
                         peca.Movable(true);
-                        calcPossibleMoves(peca);
+                        // calcPossibleMoves(peca);
                     }
                     if (peca.getInfo() == CodigoPeca.JOGADOR1)
                         peca.Movable(false);
@@ -298,7 +301,7 @@ public class Tabuleiro implements Observer {
         }
     }
 
-    private void calcPossibleMoves(Peca peca) {
+    public void calcPossibleMoves(Peca peca) {
         peca.resetPossiblePosition();
         calcFarthestUp(peca);
         calcFarthestDown(peca);
@@ -377,6 +380,16 @@ public class Tabuleiro implements Observer {
 
     public ArrayList<Peca> getVetor() {
         return this.vetor;
+    }
+
+    public CodigoJogo verificarVitoria() {
+        for (int i = 0; i < 5; i++) {
+            if (this.vetor.get(i).getInfo() == CodigoPeca.PACOCA)
+                return CodigoJogo.VITORIAJ1;
+            if (this.vetor.get(i + 20).getInfo() == CodigoPeca.PACOCA)
+                return CodigoJogo.VITORIAJ2;
+        }
+        return null;
     }
 
     public void showMatriz() {

@@ -10,12 +10,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class ThePacoca extends Application {
+public class ThePacoca extends Application implements Observer {
 
-    public Stage mainStage;
-    public Scene menuScene;
-    public Scene gameScene;
-    public Scene victoryScene;
+    private Stage mainStage;
+    private Scene menuScene;
+    private Scene gameScene;
+    private Scene victoryScene;
+    private static ThePacoca instance;
+    private CodigoJogo vitoria = null;
 
     @Override
     public void start(Stage stage) {
@@ -29,6 +31,22 @@ public class ThePacoca extends Application {
 
         mainStage.setScene(menuScene);
         mainStage.show();
+    }
+
+    public static ThePacoca getInstance() {
+        if (instance == null) {
+            instance = new ThePacoca();
+        }
+        return instance;
+    }
+
+    @Override
+    public void atualizar(CodigoJogo codigo) {
+        if (codigo == CodigoJogo.VITORIAJ1 || codigo == CodigoJogo.VITORIAJ2) {
+            this.vitoria = codigo;
+            setUpVictoryScene();
+            mainStage.setScene(victoryScene);
+        }
     }
 
     private void setUpMenuScene() {
@@ -64,6 +82,46 @@ public class ThePacoca extends Application {
         BorderPane root = new BorderPane();
         root.setCenter(TabuleiroView.getInstance());
         gameScene = new Scene(root, 500, 500);
+    }
+
+    private void setUpVictoryScene() {
+        Font customFontTitle;
+        Font customFontButton;
+
+        customFontTitle = Font.loadFont("file:fonts/Minercraftory.ttf", 54);
+        customFontButton = Font.loadFont("file:fonts/Minercraftory.ttf", 24);
+
+        if (customFontTitle == null) {
+            System.err.println("Erro ao carregar a fonte");
+            customFontTitle = Font.font("Arial", 64);
+            customFontButton = Font.font("Arial", 24);
+        }
+
+        Label titulo = null;
+        if (this.vitoria == CodigoJogo.VITORIAJ1) {
+            titulo = new Label("O Jogador 1 Venceu!");
+            titulo.setFont(customFontTitle);
+        }
+        if (this.vitoria == CodigoJogo.VITORIAJ2) {
+            titulo = new Label("O Jogador 2 Venceu!");
+            titulo.setFont(customFontTitle);
+        }
+
+        Button buttonClose = new Button("Fechar");
+
+        buttonClose.setFont(customFontButton);
+        buttonClose.setOnAction(e -> closeGame());
+
+        VBox menuLayout = new VBox(10);
+        menuLayout.setAlignment(Pos.CENTER);
+        menuLayout.getChildren().add(titulo);
+        menuLayout.getChildren().add(buttonClose);
+
+        this.menuScene = new Scene(menuLayout, 700, 500);
+    }
+
+    private void closeGame() {
+        this.mainStage.close();
     }
 
     private void showGameScreen() {
