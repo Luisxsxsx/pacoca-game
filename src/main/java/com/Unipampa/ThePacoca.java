@@ -26,6 +26,8 @@ public class ThePacoca extends Application implements Observer {
         mainStage.setResizable(false);
         mainStage.setX(433);
 
+        instance = this;
+
         setUpMenuScene();
         setUpGameScene();
 
@@ -33,20 +35,24 @@ public class ThePacoca extends Application implements Observer {
         mainStage.show();
     }
 
+    @Override
+    public void atualizar(CodigoJogo gameSituation) {
+        if (gameSituation == CodigoJogo.VITORIAJ1
+                || gameSituation == CodigoJogo.VITORIAJ2)
+            showVictoryScreen(gameSituation);
+    }
+
+    public void showVictoryScreen(CodigoJogo resultadoVitoria) {
+        this.vitoria = resultadoVitoria; // Armazena o tipo de vitória
+        setUpVictoryScene(); // Configura a cena de vitória com base no resultado
+        mainStage.setScene(victoryScene); // Muda para a cena de vitória
+    }
+
     public static ThePacoca getInstance() {
         if (instance == null) {
             instance = new ThePacoca();
         }
         return instance;
-    }
-
-    @Override
-    public void atualizar(CodigoJogo codigo) {
-        if (codigo == CodigoJogo.VITORIAJ1 || codigo == CodigoJogo.VITORIAJ2) {
-            this.vitoria = codigo;
-            setUpVictoryScene();
-            mainStage.setScene(victoryScene);
-        }
     }
 
     private void setUpMenuScene() {
@@ -82,6 +88,12 @@ public class ThePacoca extends Application implements Observer {
         BorderPane root = new BorderPane();
         root.setCenter(TabuleiroView.getInstance());
         gameScene = new Scene(root, 500, 500);
+        if (TabuleiroView.getInstance().getGameSituation() == CodigoJogo.VITORIAJ1
+                || TabuleiroView.getInstance().getGameSituation() == CodigoJogo.VITORIAJ2) {
+            this.vitoria = TabuleiroView.getInstance().getGameSituation();
+            setUpVictoryScene();
+            this.mainStage.setScene(victoryScene);
+        }
     }
 
     private void setUpVictoryScene() {
@@ -117,7 +129,7 @@ public class ThePacoca extends Application implements Observer {
         menuLayout.getChildren().add(titulo);
         menuLayout.getChildren().add(buttonClose);
 
-        this.menuScene = new Scene(menuLayout, 700, 500);
+        this.victoryScene = new Scene(menuLayout, 700, 500);
     }
 
     private void closeGame() {
